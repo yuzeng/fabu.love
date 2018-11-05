@@ -557,6 +557,40 @@ module.exports = class AppRouter {
         ctx.body = responseWrapper(true, '下载次数已更新')
     }
 
+    @request('post', '/api/apps/{fromId}/{toId}')
+    @summary("关联两个应用")
+    @tag
+    @path({
+        fromId: { type: 'string',description: '应用id1'  },
+        toId: { type: 'string', description: '应用id2' }
+    })
+    static async linkApp(ctx, next) {
+        var user = ctx.state.user.data
+        var { teamId, id } = ctx.validatedParams;
+        var team = await Team.findOne({
+            _id: teamId,
+            members: {
+                $elemMatch: {
+                    username: user.username,
+                    $or: [
+                        { role: 'owner' },
+                        { role: 'manager' }
+                    ]
+                }
+            }
+        })
+        var app1 = await App.findOne({ _id: fromId, ownerId: team._id });
+        var app2 = await App.findOne({ _id: toId, ownerId: team._id });
+        if (!app1 || !app2) {
+            throw new Error("应用不存在或您没有权限查询该应用")
+        }
+        if(app1.platform === app2.platform){
+            throw new Error("相同平台的应用无法关联")
+        }
+        await App.updateOne({_id:fromId},{linkId:toId});
+        await App.updateOne({_id:toId},{linkId:fromId});
+        ctx.body = responseWrapper(true, "应用已关联")
+    }
 
 }
 

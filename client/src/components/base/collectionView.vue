@@ -4,7 +4,7 @@
       <li v-for="(item, index) in this.dataArr" :key="index" class="itemWrapper">
         <span :class="item.platform === 'ios' ? 'appItem-platform-ios':'appItem-platform-android'" class="appItem-platform"></span>
         <img class="appItem-icon" v-if="item.icon" :src="getIcon(item)" @click="gotoAppDetail(item)">
-
+        <span v-if="item.linkId">已链接</span>
         <div class="appItem-info">
           <div class="appItem-info-namewrapper">
             <p class="nowrap" @click="gotoAppDetail(item)">{{item.appName}}</p>

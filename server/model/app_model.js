@@ -50,6 +50,7 @@ var appSchema = new Schema({
     appLevel: String,
     ownerId: String,
     changelog: String,
+    linkId:String, //关联相同应用其它平台id
     updateMode: {
         type: String,
         default: 'silent',
